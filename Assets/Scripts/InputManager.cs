@@ -5,10 +5,17 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour {
+
+    public static InputManager Instance { get; private set;}
+
+    public EventHandler OnPointerClickPerformed;
     
     private InputActions inputActions;
     
+    
     private void Awake() {
+        Instance = this;
+        
         inputActions = new InputActions();
         inputActions.Enable();
 
@@ -16,7 +23,7 @@ public class InputManager : MonoBehaviour {
     }
 
     private void PointerClick_Performed(InputAction.CallbackContext obj) {
-        Debug.Log("Click!");
+        OnPointerClickPerformed?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnDestroy() {
