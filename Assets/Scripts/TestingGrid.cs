@@ -18,7 +18,7 @@ public class TestingGrid : MonoBehaviour {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit))
         {
-            hit.transform.GetComponent<HexGridCell>().ChangeCellColor(Random.ColorHSV());
+            hit.transform.GetComponent<CellMesh>().ChangeCellColor(Random.ColorHSV());
         }
     }
 

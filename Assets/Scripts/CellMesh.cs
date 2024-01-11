@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class HexGridCell : MonoBehaviour {
+public class CellMesh : MonoBehaviour {
     
     private float cellSize;
     private Mesh mesh;

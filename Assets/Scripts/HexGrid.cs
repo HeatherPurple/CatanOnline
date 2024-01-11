@@ -35,7 +35,7 @@ public class HexGrid : MonoBehaviour
             if (i == 0) {
                 Vector3 position = newCircleStartPosition;
                 GameObject cellPrefab = Instantiate(hexGridCellPrefab, position, Quaternion.identity, transform);
-                cellPrefab.GetComponent<HexGridCell>().Init(cellSize);
+                cellPrefab.GetComponent<CellMesh>().Init(cellSize);
             } else {
                 int hexesAmount = 6 * i;
                 int oneSideHexesAmount = i+1;
@@ -50,7 +50,7 @@ public class HexGrid : MonoBehaviour
 
                     Vector3 position = newCircleStartPosition + offsetVector;
                     GameObject cellPrefab = Instantiate(hexGridCellPrefab, position, Quaternion.identity, transform);
-                    cellPrefab.GetComponent<HexGridCell>().Init(cellSize);
+                    cellPrefab.GetComponent<CellMesh>().Init(cellSize);
 
                     currentHex++;
                     if (currentHex >= oneSideHexesAmount) {
