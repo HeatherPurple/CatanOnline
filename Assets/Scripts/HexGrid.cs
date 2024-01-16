@@ -104,7 +104,8 @@ public class HexGrid : MonoBehaviour
     private void SpawnCell(Vector3 position) {
         GameObject cellObject = Instantiate(cellPrefab, position, Quaternion.identity, transform);
         Cell cell = cellObject.GetComponent<Cell>();
-        cell.Init(cellSize); //, cellCrossings
+        cell.Init(cellSize); 
+        //, cellCrossings
         //cellList.Add(cell);
         
         //List<Cell.Crossing> cellCrossings = SpawnCrossings(position);

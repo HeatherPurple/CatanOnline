@@ -6,5 +6,5 @@ using UnityEngine;
 public class CellSO : ScriptableObject {
     
     public string name = "None";
-    public Color cellMeshColor = Color.gray;
+    public Color color = Color.gray;
 }

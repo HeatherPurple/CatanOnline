@@ -7,18 +7,22 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class CellMesh : MonoBehaviour {
     
-    private float cellSize;
+    private Cell cell;
     private Mesh mesh;
     private MeshRenderer meshRenderer;
+    private float cellSize;
+
 
     private void Awake() {
+        cell = GetComponent<Cell>();
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
     private void Start() {
-        cellSize = GetComponent<Cell>().GetCellSize();
+        cellSize = cell.GetSize();
         
         CreateMesh();
+        UpdateMeshColor();
     }
 
     private void CreateMesh() {
@@ -67,16 +71,13 @@ public class CellMesh : MonoBehaviour {
         mesh.RecalculateNormals();
         GetComponent<MeshCollider>().sharedMesh = mesh;
     }
-    
-    // public void Init(float cellSize) {
-    //     this.cellSize = cellSize;
-    //     meshRenderer = GetComponent<MeshRenderer>();
-    //     
-    //     CreateMesh();
-    // }
 
-    public void ChangeMeshColor(Color newColor) {
-        meshRenderer.material.color = newColor;
+    public void UpdateMeshColor() {
+        Color color = cell.GetCellSO().color;
+        if (cell.IsSelected()) {
+            color += new Color(.1f, .1f, .1f);
+        }
+        meshRenderer.material.color = color;
     }
     
     

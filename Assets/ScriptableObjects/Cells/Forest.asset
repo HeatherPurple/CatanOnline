@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   name: Forest
-  cellMeshColor: {r: 0.032395884, g: 0.5283019, b: 0.112857126, a: 1}
+  color: {r: 0.021226406, g: 0.5, b: 0.13582113, a: 1}

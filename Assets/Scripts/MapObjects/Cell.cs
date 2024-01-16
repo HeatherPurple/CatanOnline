@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour {
 
-    private float cellSize;
-    private CellSO cellSO;
+    [SerializeField] private CellSO cellSO;
+    
+    private float size;
+    private CellMesh cellMesh;
+    private bool isSelected = false;
     
     //private Crossing[] crossingArray = new Crossing[6];
 
@@ -32,17 +35,31 @@ public class Cell : MonoBehaviour {
     //     };
     // }
 
+    private void Awake() {
+        cellMesh = GetComponent<CellMesh>();
+    }
+
     public void Init(float cellSize) { //, List<Cell.Crossing> cellCrossings
-        this.cellSize = cellSize;
-        //GetComponent<CellMesh>().Init(cellSize);
+        size = cellSize;
 
         //crossingArray = cellCrossings.ToArray();
     }
 
-    public float GetCellSize() => cellSize;
-
+    public float GetSize() => size;
+    public CellSO GetCellSO() => cellSO;
+    public bool IsSelected() => isSelected;
+    
+    public void SelectCell() {
+        isSelected = true;
+        cellMesh.UpdateMeshColor();
+    }
+    public void UnselectCell() { 
+        isSelected = false;
+        cellMesh.UpdateMeshColor(); 
+    }
+    
     public void ChangeCellSO(CellSO newCellSO) {
         cellSO = newCellSO;
-        GetComponent<CellMesh>().ChangeMeshColor(cellSO.cellMeshColor);
+        cellMesh.UpdateMeshColor();
     }
 }
