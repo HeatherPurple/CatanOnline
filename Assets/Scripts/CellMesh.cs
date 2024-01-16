@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -9,26 +10,32 @@ public class CellMesh : MonoBehaviour {
     private float cellSize;
     private Mesh mesh;
     private MeshRenderer meshRenderer;
-    private List<Vector3> vertices;
-    private List<int> triangles;
-   
+
+    private void Awake() {
+        meshRenderer = GetComponent<MeshRenderer>();
+    }
+
+    private void Start() {
+        cellSize = GetComponent<Cell>().GetCellSize();
+        
+        CreateMesh();
+    }
 
     private void CreateMesh() {
         mesh = GetComponent<MeshFilter>().mesh = new Mesh {
             name = "Hex Mesh"
         };
-        vertices = new List<Vector3>();
-        triangles = new List<int>();
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
         
-        Vector3 position = transform.position;
-        
-        vertices.Add(new Vector3(position.x ,position.y, position.z));
-        vertices.Add(new Vector3(position.x, position.y,position.z + cellSize / 2));
-        vertices.Add(new Vector3(position.x + Mathf.Sqrt(cellSize / 2 * cellSize / 2 - cellSize / 4 * cellSize / 4), position.y,position.z + cellSize / 4));
-        vertices.Add(new Vector3(position.x + Mathf.Sqrt(cellSize / 2 * cellSize / 2 - cellSize / 4 * cellSize / 4), position.y,position.z - cellSize / 4));
-        vertices.Add(new Vector3(position.x, position.y,position.z - cellSize / 2));
-        vertices.Add(new Vector3(position.x - Mathf.Sqrt(cellSize / 2 * cellSize / 2 - cellSize / 4 * cellSize / 4), position.y,position.z - cellSize / 4));
-        vertices.Add(new Vector3(position.x - Mathf.Sqrt(cellSize / 2 * cellSize / 2 - cellSize / 4 * cellSize / 4), position.y,position.z + cellSize / 4));
+        vertices.Add(Vector3.zero);
+        vertices.Add(new Vector3(0f, 0f,cellSize / 2));
+        vertices.Add(new Vector3(Mathf.Cos(Mathf.Deg2Rad * 30f) * cellSize / 2, 0f,cellSize / 4));
+        vertices.Add(new Vector3(Mathf.Cos(Mathf.Deg2Rad * 30f) * cellSize / 2, 0f,-cellSize / 4));
+        vertices.Add(new Vector3(0f, 0f,-cellSize / 2));
+        vertices.Add(new Vector3(-Mathf.Cos(Mathf.Deg2Rad * 30f) * cellSize / 2, 0f,-cellSize / 4));
+        vertices.Add(new Vector3(-Mathf.Cos(Mathf.Deg2Rad * 30f) * cellSize / 2, 0f,cellSize / 4));
         
         triangles.Add(0);
         triangles.Add(1);
@@ -53,7 +60,7 @@ public class CellMesh : MonoBehaviour {
         triangles.Add(0);
         triangles.Add(6);
         triangles.Add(1);
-        
+
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         
@@ -61,14 +68,14 @@ public class CellMesh : MonoBehaviour {
         GetComponent<MeshCollider>().sharedMesh = mesh;
     }
     
-    public void Init(float cellSize) {
-        this.cellSize = cellSize;
-        meshRenderer = GetComponent<MeshRenderer>();
+    // public void Init(float cellSize) {
+    //     this.cellSize = cellSize;
+    //     meshRenderer = GetComponent<MeshRenderer>();
+    //     
+    //     CreateMesh();
+    // }
 
-        CreateMesh();
-    }
-
-    public void ChangeCellColor(Color newColor) {
+    public void ChangeMeshColor(Color newColor) {
         meshRenderer.material.color = newColor;
     }
     
