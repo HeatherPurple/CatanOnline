@@ -7,7 +7,7 @@ public class GameHandler : MonoBehaviour {
 
    // public static GameHandler Instance { get; private set; }
    
-    public static Action OnGameStateChanged;
+    public static Action<GameState> OnGameStateChanged;
     
     public enum GameState {
         BuildingGameField,
@@ -29,6 +29,6 @@ public class GameHandler : MonoBehaviour {
 
     public static void ChangeGameState(GameState newState) {
         currentState = newState;
-        OnGameStateChanged?.Invoke();
+        OnGameStateChanged?.Invoke(currentState);
     }
 }
