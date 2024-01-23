@@ -6,14 +6,14 @@ using Random = UnityEngine.Random;
 
 public static class DiceRoller {
     
-    public static Action<int> OnDiceRolled;
+    public static event Action<int> OnDiceRolled;
     
     public static void Roll() {
-        int rollValue = Random.Range(0, 7) + Random.Range(0, 7);
-        
-        OnDiceRolled?.Invoke(rollValue);
+        int rollValue = Random.Range(1, 7) + Random.Range(1, 7);
         
         GameHandler.ChangeGameState(GameHandler.GameState.ManagingResources);
+        
+        OnDiceRolled?.Invoke(rollValue);
     }
     
 }

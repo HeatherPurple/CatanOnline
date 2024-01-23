@@ -12,6 +12,8 @@ public class DiceRollerUI : MonoBehaviour {
     private void Awake() {
         GameHandler.OnGameStateChanged += GameHandler_OnGameStateChanged;
         DiceRoller.OnDiceRolled += DiceRoller_OnDiceRolled;
+        
+        //DisableRollButton();
     }
 
     private void DiceRoller_OnDiceRolled(int value) {
@@ -20,14 +22,14 @@ public class DiceRollerUI : MonoBehaviour {
 
     private void GameHandler_OnGameStateChanged() {
         if (GameHandler.GetCurrentGameState() == GameHandler.GameState.DiceRolling) {
-            Show();
+            EnableRollButton();
         } else {
-            Hide();
+            DisableRollButton();
         }
     }
 
-    private void Show() => rollButton.interactable = true;
-    private void Hide() => rollButton.interactable = false;
+    private void EnableRollButton() => rollButton.interactable = true;
+    private void DisableRollButton() => rollButton.interactable = false;
 
     private void OnDestroy() {
         GameHandler.OnGameStateChanged -= GameHandler_OnGameStateChanged;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class GameHandler {
     
-    public static Action OnGameStateChanged;
+    public static event Action OnGameStateChanged;
     
     public enum GameState {
         BuildingGameField,
@@ -15,7 +15,6 @@ public static class GameHandler {
         StealingResources,
         Construction
     }
-    // dice roll => (getting cards) / (losing cards -> bandits turn -> stealing a card) => construction phase
     
     private static GameState currentState = GameState.BuildingGameField;
 
