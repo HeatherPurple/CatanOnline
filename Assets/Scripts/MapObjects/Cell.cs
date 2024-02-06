@@ -4,22 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : Building {
-
-    [SerializeField] private CellSO cellSO;
-    [SerializeField] private GameObject cellVisual;
-
-    private void UpdateCellVisual() {
-        Destroy(cellVisual);
-        cellVisual = Instantiate(cellSO.cellVisual, transform);
-    }
     
-    public void ChangeCellSO(CellSO newCellSO) {
-        cellSO = newCellSO;
-        UpdateCellVisual();
-    }
-
-    //private float size;
-
     //private Crossing[] crossingArray = new Crossing[6];
 
     // public struct Crossing {
@@ -43,13 +28,5 @@ public class Cell : Building {
     //         new Vector3(-xOffset, 0f, -quarterCellSize) + hexPosition,
     //     };
     // }
-
-    // public void Init(float cellSize) { //, List<Cell.Crossing> cellCrossings
-    //     size = cellSize;
-    //
-    //     //crossingArray = cellCrossings.ToArray();
-    // }
-    //
-    // public float GetSize() => size;
-
+    
 }

@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191d8177bb638034e8491cb211841f6e, type: 3}
   m_Name: Mountain
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 7601589723775648239, guid: 726ac283c3ac20f4fa11c25c8b3c7b47,
+  buildingVisual: {fileID: 7601589723775648239, guid: 726ac283c3ac20f4fa11c25c8b3c7b47,
     type: 3}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 512

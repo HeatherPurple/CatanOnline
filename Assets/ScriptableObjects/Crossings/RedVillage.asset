@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66d03021e58bd3c40b8667e209e6c29b, type: 3}
   m_Name: RedVillage
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0, b: 0, a: 1}
+  buildingVisual: {fileID: 211988091271508054, guid: 4ebe961f575eb72409a12aea805e96b1,
+    type: 3}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1024

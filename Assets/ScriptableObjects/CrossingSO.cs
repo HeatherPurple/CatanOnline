@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class CrossingSO : ScriptableObject {
+public class CrossingSO : BuildingSO {
 
-    public Color color;
-    public GameObject crossingPrefab;
+
 }

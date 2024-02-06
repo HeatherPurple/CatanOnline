@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class CellSO : ScriptableObject {
-    
-    public GameObject cellVisual;
-    //resource type
+public class CellSO : BuildingSO {
 
     //public ResourceSO resourceSO
 }

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66d03021e58bd3c40b8667e209e6c29b, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  crossingPrefab: {fileID: 3489922694744751330, guid: a8bd7adeb8d16f74c89274f8e9b35f42,
+  buildingVisual: {fileID: 211988091271508054, guid: 5585574fb477db14485af13068dcdee8,
     type: 3}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1024

@@ -8,10 +8,10 @@ using Random = UnityEngine.Random;
 
 public class MapBuilder : MonoBehaviour {
     
-    [SerializeField] private List<CellSO> possibleBuildingList;
-    private static readonly Queue<CellSO> queueToBuild = new Queue<CellSO>();
-    [CanBeNull] private static CellSO newBuildingSO;
+    [SerializeField] private List<BuildingSO> possibleBuildingList;
     
+    private static readonly Queue<BuildingSO> queueToBuild = new Queue<BuildingSO>();
+    [CanBeNull] private static BuildingSO newBuildingSO;
     [CanBeNull] private static Building currentSelectedBuilding;
     
     private void Awake() {
@@ -29,18 +29,18 @@ public class MapBuilder : MonoBehaviour {
     private void SetupBuildingGameField() {
         queueToBuild.Enqueue(possibleBuildingList[0]);
         queueToBuild.Enqueue(possibleBuildingList[1]);
-        queueToBuild.Enqueue(possibleBuildingList[1]);
-        queueToBuild.Enqueue(possibleBuildingList[0]);
+        queueToBuild.Enqueue(possibleBuildingList[2]);
         //queueToBuild.Enqueue();
         //add to queue ~50 hexes, 1 village, 1 road
         newBuildingSO = queueToBuild.Dequeue();
     }
     
-    private void SelectBuilding() {
-        //LayerMask layerMask = newBuilding?.GetLayerMask() ?? new LayerMask();
-        
+    private static void SelectBuilding() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit)) { // layermask
+        float rayMaxDistance = 100f;
+        LayerMask layerMask = newBuildingSO?.layerMask ?? new LayerMask();
+        
+        if (Physics.Raycast(ray, out var hit, rayMaxDistance,layerMask)) {
             if (!hit.transform.TryGetComponent(out Building building)) return;
             if (building == currentSelectedBuilding) return;
                 
@@ -57,15 +57,13 @@ public class MapBuilder : MonoBehaviour {
         if (newBuildingSO is null) return;
         if (currentSelectedBuilding is null) return;
         
-        Cell currentCell = currentSelectedBuilding as Cell;
-        currentCell?.ChangeCellSO(newBuildingSO);
+        currentSelectedBuilding?.ChangeBuildingSO(newBuildingSO);
 
         PeekNextBuilding();
     }
 
     private static void PeekNextBuilding() {
         if (queueToBuild.TryDequeue(out newBuildingSO)) {
-            
         }
     }
     
