@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191d8177bb638034e8491cb211841f6e, type: 3}
   m_Name: Forest
   m_EditorClassIdentifier: 
-  name: Forest
-  color: {r: 0.021226406, g: 0.5, b: 0.13582113, a: 1}
+  cellVisual: {fileID: 2532715458191231600, guid: c9562ba2537f70b41a0832a65bf9b706,
+    type: 3}

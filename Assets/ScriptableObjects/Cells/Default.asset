@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191d8177bb638034e8491cb211841f6e, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  name: None
-  color: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
+  cellVisual: {fileID: 1699410572010982447, guid: aa99aa3fb723e0b4d9c903bb60918fa0,
+    type: 3}

@@ -3,21 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cell : MonoBehaviour {
+public class Cell : Building {
 
     [SerializeField] private CellSO cellSO;
+    [SerializeField] private GameObject cellVisual;
+
+    private void UpdateCellVisual() {
+        Destroy(cellVisual);
+        cellVisual = Instantiate(cellSO.cellVisual, transform);
+    }
     
-    private float size;
-    private CellMesh cellMesh;
-    private bool isSelected = false;
-    
+    public void ChangeCellSO(CellSO newCellSO) {
+        cellSO = newCellSO;
+        UpdateCellVisual();
+    }
+
+    //private float size;
+
     //private Crossing[] crossingArray = new Crossing[6];
 
     // public struct Crossing {
     //     public Vector3 position;
     //     public bool isFilled;
     // }
-    
+
     // public Vector3[] GetHexVertices() {
     //     float halfCellSize = cellSize / 2;
     //     float quarterCellSize = cellSize / 4;
@@ -35,31 +44,12 @@ public class Cell : MonoBehaviour {
     //     };
     // }
 
-    private void Awake() {
-        cellMesh = GetComponent<CellMesh>();
-    }
+    // public void Init(float cellSize) { //, List<Cell.Crossing> cellCrossings
+    //     size = cellSize;
+    //
+    //     //crossingArray = cellCrossings.ToArray();
+    // }
+    //
+    // public float GetSize() => size;
 
-    public void Init(float cellSize) { //, List<Cell.Crossing> cellCrossings
-        size = cellSize;
-
-        //crossingArray = cellCrossings.ToArray();
-    }
-
-    public float GetSize() => size;
-    public CellSO GetCellSO() => cellSO;
-    public bool IsSelected() => isSelected;
-    
-    public void SelectCell() {
-        isSelected = true;
-        cellMesh.UpdateMeshColor();
-    }
-    public void UnselectCell() { 
-        isSelected = false;
-        cellMesh.UpdateMeshColor(); 
-    }
-    
-    public void ChangeCellSO(CellSO newCellSO) {
-        cellSO = newCellSO;
-        cellMesh.UpdateMeshColor();
-    }
 }

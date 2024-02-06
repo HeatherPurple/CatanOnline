@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Scripts/MapBuilder.cs.meta
-guid: 7e3a6027226260f4e999fc4aeb9b4a36
-========
-guid: 5c0a484e132e0924eb20c82e1480174a
->>>>>>>> dev:Assets/Scripts/GameHandler.cs.meta
+guid: fd51f4005c230b54b9b8f608a11f1def
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

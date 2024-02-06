@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu]
 public class CellSO : ScriptableObject {
     
-    public string name = "None";
-    public Color color = Color.gray;
+    public GameObject cellVisual;
+    //resource type
+
+    //public ResourceSO resourceSO
 }
+
