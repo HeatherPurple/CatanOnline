@@ -29,7 +29,9 @@ public class MapBuilder : MonoBehaviour {
     private void SetupBuildingGameField() {
         queueToBuild.Enqueue(possibleBuildingList[0]);
         queueToBuild.Enqueue(possibleBuildingList[1]);
+        queueToBuild.Enqueue(possibleBuildingList[0]);
         queueToBuild.Enqueue(possibleBuildingList[2]);
+        queueToBuild.Enqueue(possibleBuildingList[3]);
         //queueToBuild.Enqueue();
         //add to queue ~50 hexes, 1 village, 1 road
         newBuildingSO = queueToBuild.Dequeue();
