@@ -13,7 +13,7 @@ public class DiceRollerUI : MonoBehaviour {
         GameHandler.OnGameStateChanged += GameHandler_OnGameStateChanged;
         DiceRoller.OnDiceRolled += DiceRoller_OnDiceRolled;
         
-        //DisableRollButton();
+        DisableRollButton();
     }
 
     private void DiceRoller_OnDiceRolled(int value) {

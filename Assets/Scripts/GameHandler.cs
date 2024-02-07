@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GameHandler {
+public static class GameHandler{
     
     public static event Action OnGameStateChanged;
     

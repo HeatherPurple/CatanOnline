@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,6 +11,8 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private GameObject cellPrefab;
     [Tooltip("Distance between opposite hex edges")] [SerializeField] private float cellSize;
     [Tooltip("Amount of 'circles' on a map, where =1 is just a hex in a middle")] [SerializeField] private int mapSize;
+
+    private static int cellsAmount;
     
     private float xOffsetToUpperCell;
     private float zOffsetToUpperCell;
@@ -20,6 +23,13 @@ public class HexGrid : MonoBehaviour
     // private HashSet<Cell.Crossing> crossingHashSet = new HashSet<Cell.Crossing>();
 
     private void Awake() {
+        for (int i = 0; i < mapSize; i++) {
+            if (i == 0) {
+                cellsAmount = 1;
+            }
+            cellsAmount += 6 * i;
+        }
+        
         float halfCellSize = cellSize / 2;
         xOffsetToUpperCell = halfCellSize * Mathf.Cos(Mathf.Deg2Rad * 30f);
         zOffsetToUpperCell = 0.75f * cellSize;
@@ -27,6 +37,10 @@ public class HexGrid : MonoBehaviour
         
         //CalculateVertices();
         CalculateCellGenerationOffset();
+    }
+    
+    private void Start() {
+        CreateGrid();
     }
     
     private void CalculateCellGenerationOffset() {
@@ -53,9 +67,7 @@ public class HexGrid : MonoBehaviour
     //     };
     // }
 
-    private void Start() {
-        CreateGrid();
-    }
+    
 
     // private void Update() {
     //     //Debug.Log(crossingHashSet.Count);
@@ -131,6 +143,6 @@ public class HexGrid : MonoBehaviour
     //     return cellCrossings;
     // }
 
-
+    public static int GetCellsAmount() => cellsAmount;
 
 }

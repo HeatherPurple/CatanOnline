@@ -8,33 +8,25 @@ using Random = UnityEngine.Random;
 
 public class MapBuilder : MonoBehaviour {
     
-    [SerializeField] private List<BuildingSO> possibleBuildingList;
+    [SerializeField] private List<CellSO> possibleCellsToBuild;
     
+    private static List<CellSO> cellsToBuild;
     private static readonly Queue<BuildingSO> queueToBuild = new Queue<BuildingSO>();
     [CanBeNull] private static BuildingSO newBuildingSO;
     [CanBeNull] private static Building currentSelectedBuilding;
     
     private void Awake() {
-        SetupBuildingGameField();
+        cellsToBuild = possibleCellsToBuild;
     }
 
     private void Start() {
         InputManager.Instance.OnPointerClickPerformed += OnPointerClickPerformed;
+        
+        SetupBuildingGameField(HexGrid.GetCellsAmount());
     }
 
     private void Update() {
         SelectBuilding();
-    }
-
-    private void SetupBuildingGameField() {
-        queueToBuild.Enqueue(possibleBuildingList[0]);
-        queueToBuild.Enqueue(possibleBuildingList[1]);
-        queueToBuild.Enqueue(possibleBuildingList[0]);
-        queueToBuild.Enqueue(possibleBuildingList[2]);
-        queueToBuild.Enqueue(possibleBuildingList[3]);
-        //queueToBuild.Enqueue();
-        //add to queue ~50 hexes, 1 village, 1 road
-        newBuildingSO = queueToBuild.Dequeue();
     }
     
     private static void SelectBuilding() {
@@ -65,7 +57,10 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private static void PeekNextBuilding() {
-        if (queueToBuild.TryDequeue(out newBuildingSO)) {
+        if (!queueToBuild.TryDequeue(out newBuildingSO)) {
+            if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
+                GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
+            }
         }
     }
     
@@ -73,13 +68,23 @@ public class MapBuilder : MonoBehaviour {
         Build();
     }
 
+    private static void SetupBuildingQueue(int hexesNumber) {
+        Debug.Log("hexes amount is " + hexesNumber);
+        for (int i = 0; i < hexesNumber; i++) {
+            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
+        }
+        //add to queue ~50 hexes, 1 village, 1 road
+        
+    }
+    
+    private static void SetupBuildingGameField(int hexesNumber) {
+        SetupBuildingQueue(hexesNumber);
+        
+        newBuildingSO = queueToBuild.Dequeue();
+    }
+    
     private void OnDestroy() {
         InputManager.Instance.OnPointerClickPerformed -= OnPointerClickPerformed;
     }
-
-    public static void StartBuilding() {
-        //newBuilding = queueToBuild.Peek();
-    }
-    
     
 }
