@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class CellSO : BuildingSO {
+public class RoadSO : BuildingSO {
 
-    //public ResourceSO resourceSO
 }
-

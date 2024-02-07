@@ -4,19 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshFilter),typeof(MeshRenderer))]
 public class CellMesh : MonoBehaviour {
     
-    private float cellSize;
+    private Cell cell;
     private Mesh mesh;
-    private MeshRenderer meshRenderer;
+    private float cellSize;
 
     private void Awake() {
-        meshRenderer = GetComponent<MeshRenderer>();
+        cell = transform.parent.GetComponent<Cell>();
+
+        Debug.Log("Hello!");
     }
 
+    
+    
     private void Start() {
-        cellSize = GetComponent<Cell>().GetCellSize();
+        //cellSize = cell.GetSize();
         
         CreateMesh();
     }
@@ -65,19 +69,9 @@ public class CellMesh : MonoBehaviour {
         mesh.triangles = triangles.ToArray();
         
         mesh.RecalculateNormals();
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        
+        if (transform.parent.TryGetComponent(out MeshCollider col)) {
+            col.sharedMesh = mesh;
+        }
     }
-    
-    // public void Init(float cellSize) {
-    //     this.cellSize = cellSize;
-    //     meshRenderer = GetComponent<MeshRenderer>();
-    //     
-    //     CreateMesh();
-    // }
-
-    public void ChangeMeshColor(Color newColor) {
-        meshRenderer.material.color = newColor;
-    }
-    
-    
 }

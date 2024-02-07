@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 191d8177bb638034e8491cb211841f6e, type: 3}
-  m_Name: Forest
+  m_Script: {fileID: 11500000, guid: 2f0525ad0bfd7574a91331b8a1f479e3, type: 3}
+  m_Name: DefaultRoad
   m_EditorClassIdentifier: 
-  buildingVisual: {fileID: 2532715458191231600, guid: c9562ba2537f70b41a0832a65bf9b706,
+  buildingVisual: {fileID: 774397712544401878, guid: e1ab831260dab0f409b8a6fe90ab2237,
     type: 3}
   layerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 2048
