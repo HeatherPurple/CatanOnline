@@ -17,7 +17,7 @@ public class ResourceManager : MonoBehaviour {
     }
     
 
-    private static readonly Dictionary<ResourceSO, int> currentResources = new Dictionary<ResourceSO, int>();
+    private static readonly Dictionary<ResourceSO, int> currentResourcesDictionary = new Dictionary<ResourceSO, int>();
     private static readonly List<ResourceSO> newResourcesToClaim = new List<ResourceSO>();
     
     private static int lostResourcesAmount;
@@ -62,13 +62,13 @@ public class ResourceManager : MonoBehaviour {
         }
     }
 
-    private static int CountCurrentResources() => currentResources.Sum(keyValuePair => keyValuePair.Value);
+    private static int CountCurrentResources() => currentResourcesDictionary.Sum(keyValuePair => keyValuePair.Value);
 
     private static void AddResourceToCurrent(ResourceSO resourceSO) {
-        if (currentResources.ContainsKey(resourceSO)) {
-            currentResources[resourceSO] += 1;
+        if (currentResourcesDictionary.ContainsKey(resourceSO)) {
+            currentResourcesDictionary[resourceSO] += 1;
         } else {
-            currentResources.Add(resourceSO, 1);
+            currentResourcesDictionary.Add(resourceSO, 1);
         }
     }
     
@@ -77,7 +77,7 @@ public class ResourceManager : MonoBehaviour {
     }
     
     public static int GetResourceAmount(ResourceSO resourceSO) => 
-        currentResources.ContainsKey(resourceSO) ? currentResources[resourceSO] : 0;
+        currentResourcesDictionary.ContainsKey(resourceSO) ? currentResourcesDictionary[resourceSO] : 0;
     
     public static void ClaimResources() {
         foreach (var resource in newResourcesToClaim) {
