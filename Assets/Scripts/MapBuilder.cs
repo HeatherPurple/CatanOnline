@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -46,6 +47,22 @@ public class MapBuilder : MonoBehaviour {
             currentSelectedBuilding = null;
         }
     }
+
+    private void Build<T>(T buildingSO) where T: BuildingSO {
+        //add to queue
+        //peek to newBuilding
+        //instantiate Tbuilding
+    }
+
+    private void SelectGridObject() {
+        //var item = Grid.buildingsHashSet.Where(x => x. == T).Select one with nearest coord
+        //currentItem = item
+        //Tbuilding.transform.position = item.GetPosition()
+    }
+
+    private void PlaceT() {
+        //curentItem.SetTransform
+    }
     
     private static void Build() {
         if (newBuildingSO is null) return;
@@ -69,7 +86,6 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private static void SetupBuildingQueue(int hexesNumber) {
-        Debug.Log("hexes amount is " + hexesNumber);
         for (int i = 0; i < hexesNumber; i++) {
             queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
         }

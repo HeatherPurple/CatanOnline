@@ -24,6 +24,7 @@ public abstract class Building : MonoBehaviour {
     }
     
     public bool IsSelected() => isSelected;
+    public BuildingSO GetBuildingSO() => buildingSO;
     public LayerMask GetLayerMask() => layerMask;
     
     public virtual void SelectBuilding() {
