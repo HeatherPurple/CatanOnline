@@ -1,31 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public abstract class Building : MonoBehaviour {
     public event Action OnSelectionPerformed;
     
-    [SerializeField] private LayerMask layerMask;
-    [SerializeField] private BuildingSO buildingSO;
-    [SerializeField] private GameObject buildingVisual;
-
-    
+    [CanBeNull] private BuildingSO buildingSO;
+    [CanBeNull] private GameObject buildingVisual;
     private bool isSelected = false;
-    
-    private void UpdateBuildingVisual() {
-        Destroy(buildingVisual);
-        buildingVisual = Instantiate(buildingSO.buildingVisual, transform);
+
+    private void Awake() {
+        if (buildingSO is not null) {
+            buildingVisual = Instantiate(buildingSO.buildingVisual, transform);
+        }
     }
     
     public void ChangeBuildingSO(BuildingSO newBuildingSO) {
         buildingSO = newBuildingSO;
         UpdateBuildingVisual();
     }
+
+    private void UpdateBuildingVisual() {
+        Destroy(buildingVisual); //check for null?
+        buildingVisual = Instantiate(buildingSO.buildingVisual, transform);
+    }
     
     public bool IsSelected() => isSelected;
-    public BuildingSO GetBuildingSO() => buildingSO;
-    public LayerMask GetLayerMask() => layerMask;
     
     public virtual void SelectBuilding() {
         isSelected = true;

@@ -11,34 +11,34 @@ using Random = UnityEngine.Random;
 
 public class HexGrid : MonoBehaviour
 {
-    [SerializeField] private GameObject cellPrefab; //no need
     [Tooltip("Distance between opposite hex edges")] [SerializeField] private float cellSize;
     [Tooltip("Amount of 'circles' on a map, where =1 is just a hex in a middle")] [SerializeField] private int mapSize;
+    [SerializeField] private BuildingSO defaultCellSO;
 
-    [SerializeField] private Transform cellsContainer;
+    private const int HEX_CORNERS_AMOUNT = 6;
 
+    private static Vector3 gridPosition;
+    private static float xOffsetToUpperCell;
+    private static float zOffsetToUpperCell;
+    private static float outerRadius;
     private static int cellsAmount;
-    
-    private float xOffsetToUpperCell;
-    private float zOffsetToUpperCell;
-    private float halfCellSize;
-    
-    private Vector3[] cellGenerationOffsetArray;
-    private readonly Vector3[] crossingsPositionArray = new Vector3[6];
-    private readonly Vector3[] roadsPositionArray = new Vector3[6];
-    
-    private HashSet<GridObject> buildingsHashSet = new HashSet<GridObject>();
+    private static Vector3[] cellGenerationOffsetArray;
+    private static readonly Vector3[] crossingsPositionArray = new Vector3[HEX_CORNERS_AMOUNT];
+    private static readonly Vector3[] roadsPositionArray = new Vector3[HEX_CORNERS_AMOUNT];
+    private static readonly HashSet<GridObject> buildingsHashSet = new HashSet<GridObject>();
 
     private void Awake() { 
         for (int i = 0; i < mapSize; i++) {
             if (i == 0) {
                 cellsAmount = 1;
             }
-            cellsAmount += 6 * i;
+            cellsAmount += HEX_CORNERS_AMOUNT * i;
         }
+
+        gridPosition = transform.position;
         
-        halfCellSize = cellSize / 2;
-        xOffsetToUpperCell = (float) Math.Round(Mathf.Cos(Mathf.Deg2Rad * 30f),3) * halfCellSize;
+        outerRadius = cellSize / 2;
+        xOffsetToUpperCell = (float) Math.Round(Mathf.Cos(Mathf.Deg2Rad * 30f),3) * outerRadius;
         zOffsetToUpperCell = 0.75f * cellSize;
         
         CalculateCellGenerationOffset();
@@ -48,10 +48,9 @@ public class HexGrid : MonoBehaviour
     
     private void Start() {
         CreateGrid();
-        Debug.Log(buildingsHashSet.Count);
     }
     
-    private void CalculateCellGenerationOffset() {
+    private static void CalculateCellGenerationOffset() {
         float xOffsetToRightCell = xOffsetToUpperCell * 2;
         
         cellGenerationOffsetArray = new Vector3[] {
@@ -64,19 +63,19 @@ public class HexGrid : MonoBehaviour
         };
     }
     
-    private void CalculateCrossingsCoordinates() {
-        for (int i = 0; i < 6; i++) {
+    private static void CalculateCrossingsCoordinates() {
+        for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
             float angleRad = Mathf.PI / 3 * i + Mathf.PI / 6;
             
             crossingsPositionArray[i] = new Vector3((float) Math.Round(Mathf.Cos(angleRad),3), 
-                0f, (float) Math.Round(Mathf.Sin(angleRad),3)) * halfCellSize;
+                0f, (float) Math.Round(Mathf.Sin(angleRad),3)) * outerRadius;
         }
     }
     
-    private void CalculateRoadsCoordinates() {
-        for (int i = 0; i < 6; i++) {
+    private static void CalculateRoadsCoordinates() {
+        for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
             int j = i + 1;
-            if (j == 6) {
+            if (j == HEX_CORNERS_AMOUNT) {
                 j = 0;
             }
             roadsPositionArray[i] = (crossingsPositionArray[i] + crossingsPositionArray[j]) / 2;
@@ -89,14 +88,11 @@ public class HexGrid : MonoBehaviour
         Vector3 offsetToNewCirclePosition = new Vector3(-xOffsetToUpperCell, 0f, zOffsetToUpperCell);
         
         for (int i = 0; i < mapSize; i++) {
-            //iterating through circles
-            
             if (i == 0) {
-                //spawning middle hex
-                SpawnBuilding<Cell>(circleStartPosition);
+                SpawnGridObject<Cell>(circleStartPosition);
             } else {
-                int hexesInCurrentCircle = 6 * i;
-                int hexesOnCurrentSideMax = i+1;
+                int hexesInCurrentCircle = HEX_CORNERS_AMOUNT * i;
+                int hexesOnCurrentSideMax = i + 1;
                 int hexesOnCurrentSide = 0;
                 int offsetIndex = 0;
                 
@@ -104,18 +100,16 @@ public class HexGrid : MonoBehaviour
                 Vector3 circleGenerationOffset = Vector3.zero;
                 
                 for (int j = 0; j < hexesInCurrentCircle; j++) {
-                    //iterating through hexes in a circle
-
                     Vector3 hexPosition = circleStartPosition + circleGenerationOffset;
-                    SpawnBuilding<Cell>(hexPosition);
+                    SpawnGridObject<Cell>(hexPosition);
                     
                     hexesOnCurrentSide++;
                     if (hexesOnCurrentSide >= hexesOnCurrentSideMax) {
                         hexesOnCurrentSide = 1;
                         offsetIndex++;
-                        if (offsetIndex >= cellGenerationOffsetArray.Length) {
-                            offsetIndex = 0;
-                        }
+                        // if (offsetIndex >= cellGenerationOffsetArray.Length) {
+                        //     offsetIndex = 0;
+                        // }
                     }
                     
                     circleGenerationOffset += cellGenerationOffsetArray[offsetIndex];
@@ -124,36 +118,32 @@ public class HexGrid : MonoBehaviour
         }
     }
     
-    private void SpawnBuilding<T>(Vector3 position) where T: Building{
-        GridObject gridObject = new GridObject(position, typeof(T));
+    private void SpawnGridObject<T>(Vector3 position) where T: Building{
+        GridObject gridObject = new GridObject(transform, outerRadius, position, typeof(T));
         buildingsHashSet.Add(gridObject);
 
         if (typeof(T) == typeof(Cell)) {
-            const int HEX_CORNERS_AMOUNT = 6;
-            Color color = Random.ColorHSV();
             for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
-                
-                SpawnBuilding<Crossing>(position + crossingsPositionArray[i]);
-                SpawnBuilding<Road>(position + roadsPositionArray[i]);
+                SpawnGridObject<Crossing>(position + crossingsPositionArray[i]);
+                SpawnGridObject<Road>(position + roadsPositionArray[i]);
             }
             
-            GameObject cellObject = Instantiate(cellPrefab, position, Quaternion.identity, transform);
-        
-            cellObject.transform.localScale *= halfCellSize;
+            gridObject.GetBuilding().ChangeBuildingSO(defaultCellSO);
         }
-        
-        
     }
     
 
     public static int GetCellsAmount() => cellsAmount;
 
-    public GridObject GetNearestToMousePositionGridObject<T>() where T: Building{
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.value);
-
+    public static GridObject? GetNearestToMousePositionGridObject<T>() where T: Building {
+        Vector3 mousePosition = Mouse.current.position.ReadValue();
+        mousePosition.z = Camera.main.transform.position.y - gridPosition.y;
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        
         return buildingsHashSet
             .Where(x => x.IsTypeOfBuilding<T>())
-            .OrderBy(x => Vector3.Distance(x.GetPosition(), mousePosition))
+            .Where(x => Vector3.Distance(x.GetPosition(), worldPosition) <= outerRadius)
+            .OrderBy(x => Vector3.Distance(x.GetPosition(), worldPosition))
             .FirstOrDefault();
     }
 

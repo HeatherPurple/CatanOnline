@@ -5,5 +5,4 @@ using UnityEngine;
 public class BuildingSO : ScriptableObject
 {
     public GameObject buildingVisual;
-    public LayerMask layerMask;
 }

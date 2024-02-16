@@ -27,25 +27,35 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private void Update() {
-        SelectBuilding();
+        SelectBuilding<Cell>();
     }
     
-    private static void SelectBuilding() {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        float rayMaxDistance = 100f;
-        LayerMask layerMask = newBuildingSO?.layerMask ?? new LayerMask();
+    private static void SetupBuildingGameField(int hexesNumber) {
+        SetupBuildingQueue(hexesNumber);
         
-        if (Physics.Raycast(ray, out var hit, rayMaxDistance,layerMask)) {
-            if (!hit.transform.TryGetComponent(out Building building)) return;
-            if (building == currentSelectedBuilding) return;
-                
-            currentSelectedBuilding?.UnselectBuilding();
-            currentSelectedBuilding = building;
-            building.SelectBuilding();
-        } else {
+        newBuildingSO = queueToBuild.Dequeue();
+    }
+
+    private static void SetupBuildingQueue(int hexesNumber) {
+        for (int i = 0; i < hexesNumber; i++) {
+            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
+        }
+        //add to queue ~50 hexes, 1 village, 1 road
+        
+    }
+    
+    private static void SelectBuilding<T>() where T: Building {
+        Building building = HexGrid.GetNearestToMousePositionGridObject<T>()?.GetBuilding();
+        if (building is null) {
             currentSelectedBuilding?.UnselectBuilding();
             currentSelectedBuilding = null;
+            return;
         }
+        if (building == currentSelectedBuilding) return;
+
+        currentSelectedBuilding?.UnselectBuilding();
+        currentSelectedBuilding = building;
+        currentSelectedBuilding?.SelectBuilding();
     }
 
     private void Build<T>(T buildingSO) where T: BuildingSO {
@@ -84,20 +94,8 @@ public class MapBuilder : MonoBehaviour {
     private void OnPointerClickPerformed(object sender, EventArgs e) {
         Build();
     }
-
-    private static void SetupBuildingQueue(int hexesNumber) {
-        for (int i = 0; i < hexesNumber; i++) {
-            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
-        }
-        //add to queue ~50 hexes, 1 village, 1 road
-        
-    }
     
-    private static void SetupBuildingGameField(int hexesNumber) {
-        SetupBuildingQueue(hexesNumber);
-        
-        newBuildingSO = queueToBuild.Dequeue();
-    }
+    
     
     private void OnDestroy() {
         InputManager.Instance.OnPointerClickPerformed -= OnPointerClickPerformed;
