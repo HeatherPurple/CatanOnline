@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -29,25 +30,36 @@ public class MapBuilder : MonoBehaviour {
         SelectBuilding();
     }
     
-    private static void SelectBuilding() {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        float rayMaxDistance = 100f;
-        LayerMask layerMask = newBuildingSO?.layerMask ?? new LayerMask();
+    private static void SetupBuildingGameField(int hexesNumber) {
+        SetupBuildingQueue(hexesNumber);
         
-        if (Physics.Raycast(ray, out var hit, rayMaxDistance,layerMask)) {
-            if (!hit.transform.TryGetComponent(out Building building)) return;
-            if (building == currentSelectedBuilding) return;
-                
-            currentSelectedBuilding?.UnselectBuilding();
-            currentSelectedBuilding = building;
-            building.SelectBuilding();
-        } else {
-            currentSelectedBuilding?.UnselectBuilding();
-            currentSelectedBuilding = null;
+        newBuildingSO = queueToBuild.Dequeue();
+    }
+
+    private static void SetupBuildingQueue(int hexesNumber) {
+        for (int i = 0; i < hexesNumber; i++) {
+            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
         }
+        //add to queue ~50 hexes, 1 village, 1 road
+        
     }
     
-    private static void Build() {
+    private static void SelectBuilding() {
+        if (newBuildingSO is null) return;
+        Building building = HexGrid.GetNearestToMousePositionBuilding(newBuildingSO.buildingType);
+        if (building is null) {
+            currentSelectedBuilding?.UnselectBuilding();
+            currentSelectedBuilding = null;
+            return;
+        }
+        if (building == currentSelectedBuilding) return;
+
+        currentSelectedBuilding?.UnselectBuilding();
+        currentSelectedBuilding = building;
+        currentSelectedBuilding?.SelectBuilding();
+    }
+    
+    private static void PlaceBuilding() {
         if (newBuildingSO is null) return;
         if (currentSelectedBuilding is null) return;
         
@@ -57,30 +69,14 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private static void PeekNextBuilding() {
-        if (!queueToBuild.TryDequeue(out newBuildingSO)) {
-            if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
-                GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
-            }
+        if (queueToBuild.TryDequeue(out newBuildingSO)) return;
+        if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
+            GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
         }
     }
     
-    private void OnPointerClickPerformed(object sender, EventArgs e) {
-        Build();
-    }
-
-    private static void SetupBuildingQueue(int hexesNumber) {
-        Debug.Log("hexes amount is " + hexesNumber);
-        for (int i = 0; i < hexesNumber; i++) {
-            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
-        }
-        //add to queue ~50 hexes, 1 village, 1 road
-        
-    }
-    
-    private static void SetupBuildingGameField(int hexesNumber) {
-        SetupBuildingQueue(hexesNumber);
-        
-        newBuildingSO = queueToBuild.Dequeue();
+    private static void OnPointerClickPerformed(object sender, EventArgs e) {
+        PlaceBuilding();
     }
     
     private void OnDestroy() {

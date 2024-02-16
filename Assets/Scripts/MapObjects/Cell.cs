@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class Cell : Building {
     
+    protected override void Awake() {
+        base.Awake();
+        buildingType = BuildingType.Cell;
+    }
+
     //private Crossing[] crossingArray = new Crossing[6];
 
     // public struct Crossing {
@@ -28,5 +33,5 @@ public class Cell : Building {
     //         new Vector3(-xOffset, 0f, -quarterCellSize) + hexPosition,
     //     };
     // }
-    
+
 }
