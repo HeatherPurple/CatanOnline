@@ -27,7 +27,7 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private void Update() {
-        SelectBuilding<Cell>();
+        SelectBuilding();
     }
     
     private static void SetupBuildingGameField(int hexesNumber) {
@@ -44,8 +44,10 @@ public class MapBuilder : MonoBehaviour {
         
     }
     
-    private static void SelectBuilding<T>() where T: Building {
-        Building building = HexGrid.GetNearestToMousePositionGridObject<T>()?.GetBuilding();
+    private static void SelectBuilding() {
+        Type buildingType = newBuildingSO?.GetBuildingType();
+        if (buildingType is null) return;
+        Building building = HexGrid.GetNearestToMousePositionGridObject(buildingType)?.GetBuilding();
         if (building is null) {
             currentSelectedBuilding?.UnselectBuilding();
             currentSelectedBuilding = null;
@@ -57,24 +59,8 @@ public class MapBuilder : MonoBehaviour {
         currentSelectedBuilding = building;
         currentSelectedBuilding?.SelectBuilding();
     }
-
-    private void Build<T>(T buildingSO) where T: BuildingSO {
-        //add to queue
-        //peek to newBuilding
-        //instantiate Tbuilding
-    }
-
-    private void SelectGridObject() {
-        //var item = Grid.buildingsHashSet.Where(x => x. == T).Select one with nearest coord
-        //currentItem = item
-        //Tbuilding.transform.position = item.GetPosition()
-    }
-
-    private void PlaceT() {
-        //curentItem.SetTransform
-    }
     
-    private static void Build() {
+    private static void PlaceBuilding() {
         if (newBuildingSO is null) return;
         if (currentSelectedBuilding is null) return;
         
@@ -84,18 +70,15 @@ public class MapBuilder : MonoBehaviour {
     }
 
     private static void PeekNextBuilding() {
-        if (!queueToBuild.TryDequeue(out newBuildingSO)) {
-            if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
-                GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
-            }
+        if (queueToBuild.TryDequeue(out newBuildingSO)) return;
+        if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
+            GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
         }
     }
     
-    private void OnPointerClickPerformed(object sender, EventArgs e) {
-        Build();
+    private static void OnPointerClickPerformed(object sender, EventArgs e) {
+        PlaceBuilding();
     }
-    
-    
     
     private void OnDestroy() {
         InputManager.Instance.OnPointerClickPerformed -= OnPointerClickPerformed;

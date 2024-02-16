@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : Building {
-    
+
     //private Crossing[] crossingArray = new Crossing[6];
 
     // public struct Crossing {
@@ -28,5 +28,5 @@ public class Cell : Building {
     //         new Vector3(-xOffset, 0f, -quarterCellSize) + hexPosition,
     //     };
     // }
-    
+
 }

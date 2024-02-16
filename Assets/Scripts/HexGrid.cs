@@ -118,7 +118,7 @@ public class HexGrid : MonoBehaviour
         }
     }
     
-    private void SpawnGridObject<T>(Vector3 position) where T: Building{
+    private void SpawnGridObject<T>(Vector3 position) where T: Building {
         GridObject gridObject = new GridObject(transform, outerRadius, position, typeof(T));
         buildingsHashSet.Add(gridObject);
 
@@ -128,20 +128,20 @@ public class HexGrid : MonoBehaviour
                 SpawnGridObject<Road>(position + roadsPositionArray[i]);
             }
             
-            gridObject.GetBuilding().ChangeBuildingSO(defaultCellSO);
+            gridObject.GetBuilding().ChangeBuildingSO(defaultCellSO);//
         }
     }
     
 
     public static int GetCellsAmount() => cellsAmount;
 
-    public static GridObject? GetNearestToMousePositionGridObject<T>() where T: Building {
+    public static GridObject? GetNearestToMousePositionGridObject(Type buildingType) {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
         mousePosition.z = Camera.main.transform.position.y - gridPosition.y;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         
         return buildingsHashSet
-            .Where(x => x.IsTypeOfBuilding<T>())
+            .Where(x => x.IsTypeOfBuilding(buildingType))
             .Where(x => Vector3.Distance(x.GetPosition(), worldPosition) <= outerRadius)
             .OrderBy(x => Vector3.Distance(x.GetPosition(), worldPosition))
             .FirstOrDefault();

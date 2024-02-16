@@ -31,7 +31,7 @@ public struct GridObject {
     }
     
     public Vector3 GetPosition() => position;
-    public bool IsTypeOfBuilding<T>() => buildingType.Equals(typeof(T));
+    public bool IsTypeOfBuilding(Type type) => buildingType == type;
 
     public Building GetBuilding() => building;
 
