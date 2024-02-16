@@ -1,22 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 public class HexGrid : MonoBehaviour
 {
-    [Tooltip("Distance between opposite hex edges")] [SerializeField] private float cellSize;
     [Tooltip("Amount of 'circles' on a map, where =1 is just a hex in a middle")] [SerializeField] private int mapSize;
-    [SerializeField] private BuildingSO defaultCellSO;
+    [SerializeField] private List<BuildingData> defaultBuildingDataList = new List<BuildingData>();
 
     private const int HEX_CORNERS_AMOUNT = 6;
+    private const float CELL_SIZE = 10;
 
     private static Vector3 gridPosition;
     private static float xOffsetToUpperCell;
@@ -28,6 +23,7 @@ public class HexGrid : MonoBehaviour
     private static readonly Vector3[] roadsPositionArray = new Vector3[HEX_CORNERS_AMOUNT];
     private static readonly HashSet<Building> buildingsHashSet = new HashSet<Building>();
 
+
     private void Awake() { 
         for (int i = 0; i < mapSize; i++) {
             if (i == 0) {
@@ -38,9 +34,9 @@ public class HexGrid : MonoBehaviour
 
         gridPosition = transform.position;
         
-        outerRadius = cellSize / 2;
+        outerRadius = CELL_SIZE / 2;
         xOffsetToUpperCell = (float) Math.Round(Mathf.Cos(Mathf.Deg2Rad * 30f),3) * outerRadius;
-        zOffsetToUpperCell = 0.75f * cellSize;
+        zOffsetToUpperCell = 0.75f * CELL_SIZE;
         
         CalculateCellGenerationOffset();
         CalculateCrossingsCoordinates();
@@ -118,6 +114,7 @@ public class HexGrid : MonoBehaviour
     
     private void SpawnBuilding<T>(Vector3 position) where T: Building {
         if (!CanPlaceBuildingHere(position)) return;
+        
         GameObject spawnedBuildingGameObject = new GameObject {
             transform = {
                 parent = transform,
@@ -126,15 +123,16 @@ public class HexGrid : MonoBehaviour
         };
         spawnedBuildingGameObject.transform.localScale *= outerRadius;
         Building building = spawnedBuildingGameObject.AddComponent<T>();
+        building.ChangeBuildingSO(defaultBuildingDataList
+            .FirstOrDefault(x => x.buildingType == building.GetBuildingType())
+            ?.buildingSO);
         buildingsHashSet.Add(building);
-
-        if (typeof(T) == typeof(Cell)) {
-            for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
-                SpawnBuilding<Crossing>(position + crossingsPositionArray[i]);
-                SpawnBuilding<Road>(position + roadsPositionArray[i]);
-            }
-            
-            building.ChangeBuildingSO(defaultCellSO);//
+        
+        if (typeof(T) != typeof(Cell)) return;
+        
+        for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
+            SpawnBuilding<Crossing>(position + crossingsPositionArray[i]);
+            SpawnBuilding<Road>(position + roadsPositionArray[i]);
         }
     }
 
@@ -144,18 +142,18 @@ public class HexGrid : MonoBehaviour
             .Count(x => Vector3.Distance(x.transform.position, position) <= BUILDING_PLACE_RADIUS) <= 0;
     }
 
-    public static int GetCellsAmount() => cellsAmount;
-
-    [CanBeNull] public static Building GetNearestToMousePositionGridObject(Type buildingType) {
+    [CanBeNull] public static Building GetNearestToMousePositionGridObject(BuildingType buildingType) {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
         mousePosition.z = Camera.main.transform.position.y - gridPosition.y;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         
         return buildingsHashSet
-            .Where(x => x.GetType() == buildingType)
+            .Where(x => x.GetBuildingType() == buildingType)
             .Where(x => Vector3.Distance(x.transform.position, worldPosition) <= outerRadius)
             .OrderBy(x => Vector3.Distance(x.transform.position, worldPosition))
             .FirstOrDefault();
     }
-
+    
+    public static int GetCellsAmount() => cellsAmount;
+    
 }

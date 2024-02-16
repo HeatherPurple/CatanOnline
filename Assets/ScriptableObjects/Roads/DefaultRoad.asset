@@ -14,6 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingVisual: {fileID: 774397712544401878, guid: e1ab831260dab0f409b8a6fe90ab2237,
     type: 3}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 2048
+  buildingType: 2

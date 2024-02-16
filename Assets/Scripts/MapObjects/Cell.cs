@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : Building {
+    
+    protected override void Awake() {
+        base.Awake();
+        buildingType = BuildingType.Cell;
+    }
 
     //private Crossing[] crossingArray = new Crossing[6];
 

@@ -1430,7 +1430,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 150, z: -1.5}
+  m_LocalPosition: {x: 0, y: 70, z: -1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3712,7 +3712,7 @@ Transform:
   m_GameObject: {fileID: 788255752}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 150, z: -1.5}
+  m_LocalPosition: {x: 0, y: 70, z: -1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8585,9 +8585,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f51a733784a4aa548a9193fb97af21fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellSize: 10
-  mapSize: 7
-  defaultCellSO: {fileID: 11400000, guid: c7efec9652fa1704da0fc335c498e73d, type: 2}
+  mapSize: 3
+  defaultBuildingDataList:
+  - buildingType: 0
+    buildingSO: {fileID: 11400000, guid: c7efec9652fa1704da0fc335c498e73d, type: 2}
+  - buildingType: 1
+    buildingSO: {fileID: 11400000, guid: 4617e7c560934a046bb6483a90292ca8, type: 2}
+  - buildingType: 2
+    buildingSO: {fileID: 11400000, guid: 5d1fe1c743794f244b9157626e75268c, type: 2}
 --- !u!4 &2026051013
 Transform:
   m_ObjectHideFlags: 0
