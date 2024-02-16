@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -25,7 +26,7 @@ public class HexGrid : MonoBehaviour
     private static Vector3[] cellGenerationOffsetArray;
     private static readonly Vector3[] crossingsPositionArray = new Vector3[HEX_CORNERS_AMOUNT];
     private static readonly Vector3[] roadsPositionArray = new Vector3[HEX_CORNERS_AMOUNT];
-    private static readonly HashSet<GridObject> buildingsHashSet = new HashSet<GridObject>();
+    private static readonly HashSet<Building> buildingsHashSet = new HashSet<Building>();
 
     private void Awake() { 
         for (int i = 0; i < mapSize; i++) {
@@ -89,7 +90,7 @@ public class HexGrid : MonoBehaviour
         
         for (int i = 0; i < mapSize; i++) {
             if (i == 0) {
-                SpawnGridObject<Cell>(circleStartPosition);
+                SpawnBuilding<Cell>(circleStartPosition);
             } else {
                 int hexesInCurrentCircle = HEX_CORNERS_AMOUNT * i;
                 int hexesOnCurrentSideMax = i + 1;
@@ -101,15 +102,12 @@ public class HexGrid : MonoBehaviour
                 
                 for (int j = 0; j < hexesInCurrentCircle; j++) {
                     Vector3 hexPosition = circleStartPosition + circleGenerationOffset;
-                    SpawnGridObject<Cell>(hexPosition);
+                    SpawnBuilding<Cell>(hexPosition);
                     
                     hexesOnCurrentSide++;
                     if (hexesOnCurrentSide >= hexesOnCurrentSideMax) {
                         hexesOnCurrentSide = 1;
                         offsetIndex++;
-                        // if (offsetIndex >= cellGenerationOffsetArray.Length) {
-                        //     offsetIndex = 0;
-                        // }
                     }
                     
                     circleGenerationOffset += cellGenerationOffsetArray[offsetIndex];
@@ -118,32 +116,45 @@ public class HexGrid : MonoBehaviour
         }
     }
     
-    private void SpawnGridObject<T>(Vector3 position) where T: Building {
-        GridObject gridObject = new GridObject(transform, outerRadius, position, typeof(T));
-        buildingsHashSet.Add(gridObject);
+    private void SpawnBuilding<T>(Vector3 position) where T: Building {
+        if (!CanPlaceBuildingHere(position)) return;
+        GameObject spawnedBuildingGameObject = new GameObject {
+            transform = {
+                parent = transform,
+                position = position,
+            }
+        };
+        spawnedBuildingGameObject.transform.localScale *= outerRadius;
+        Building building = spawnedBuildingGameObject.AddComponent<T>();
+        buildingsHashSet.Add(building);
 
         if (typeof(T) == typeof(Cell)) {
             for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
-                SpawnGridObject<Crossing>(position + crossingsPositionArray[i]);
-                SpawnGridObject<Road>(position + roadsPositionArray[i]);
+                SpawnBuilding<Crossing>(position + crossingsPositionArray[i]);
+                SpawnBuilding<Road>(position + roadsPositionArray[i]);
             }
             
-            gridObject.GetBuilding().ChangeBuildingSO(defaultCellSO);//
+            building.ChangeBuildingSO(defaultCellSO);//
         }
     }
-    
+
+    private static bool CanPlaceBuildingHere(Vector3 position) {
+        const float BUILDING_PLACE_RADIUS = 0.05f;
+        return buildingsHashSet
+            .Count(x => Vector3.Distance(x.transform.position, position) <= BUILDING_PLACE_RADIUS) <= 0;
+    }
 
     public static int GetCellsAmount() => cellsAmount;
 
-    public static GridObject? GetNearestToMousePositionGridObject(Type buildingType) {
+    [CanBeNull] public static Building GetNearestToMousePositionGridObject(Type buildingType) {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
         mousePosition.z = Camera.main.transform.position.y - gridPosition.y;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         
         return buildingsHashSet
-            .Where(x => x.IsTypeOfBuilding(buildingType))
-            .Where(x => Vector3.Distance(x.GetPosition(), worldPosition) <= outerRadius)
-            .OrderBy(x => Vector3.Distance(x.GetPosition(), worldPosition))
+            .Where(x => x.GetType() == buildingType)
+            .Where(x => Vector3.Distance(x.transform.position, worldPosition) <= outerRadius)
+            .OrderBy(x => Vector3.Distance(x.transform.position, worldPosition))
             .FirstOrDefault();
     }
 
