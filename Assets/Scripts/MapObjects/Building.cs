@@ -18,13 +18,12 @@ public abstract class Building : MonoBehaviour {
     [CanBeNull] private BuildingSO buildingSO;
     [CanBeNull] private GameObject buildingVisual;
     private bool isSelected = false;
+    private bool isBuilt = false;
 
     protected virtual void Awake() {
         if (buildingSO is not null) {
             buildingVisual = Instantiate(buildingSO.buildingVisual, transform);
         }
-        
-        //set visual?
     }
 
     private void UpdateBuildingVisual() {
@@ -34,7 +33,13 @@ public abstract class Building : MonoBehaviour {
         buildingVisual = Instantiate(buildingSO?.buildingVisual, transform);
     }
     
+    public void SetDefaultBuildingSO(BuildingSO buildingBuildingSO) {
+        ChangeBuildingSO(buildingBuildingSO);
+        isBuilt = false;
+    }
+    
     public void ChangeBuildingSO(BuildingSO newBuildingSO) {
+        isBuilt = true;
         buildingSO = newBuildingSO;
         UpdateBuildingVisual();
     }
@@ -49,6 +54,7 @@ public abstract class Building : MonoBehaviour {
     }
     
     public bool IsSelected() => isSelected;
+    public bool IsBuilt() => isBuilt;
     public BuildingType GetBuildingType() => buildingType;
 
 }

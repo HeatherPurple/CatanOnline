@@ -46,7 +46,7 @@ public class MapBuilder : MonoBehaviour {
     
     private static void SelectBuilding() {
         if (newBuildingSO is null) return;
-        Building building = HexGrid.GetNearestToMousePositionGridObject(newBuildingSO.buildingType);
+        Building building = HexGrid.GetNearestToMousePositionBuilding(newBuildingSO.buildingType);
         if (building is null) {
             currentSelectedBuilding?.UnselectBuilding();
             currentSelectedBuilding = null;

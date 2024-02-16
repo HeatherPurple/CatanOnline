@@ -123,7 +123,7 @@ public class HexGrid : MonoBehaviour
         };
         spawnedBuildingGameObject.transform.localScale *= outerRadius;
         Building building = spawnedBuildingGameObject.AddComponent<T>();
-        building.ChangeBuildingSO(defaultBuildingDataList
+        building.SetDefaultBuildingSO(defaultBuildingDataList
             .FirstOrDefault(x => x.buildingType == building.GetBuildingType())
             ?.buildingSO);
         buildingsHashSet.Add(building);
@@ -142,13 +142,14 @@ public class HexGrid : MonoBehaviour
             .Count(x => Vector3.Distance(x.transform.position, position) <= BUILDING_PLACE_RADIUS) <= 0;
     }
 
-    [CanBeNull] public static Building GetNearestToMousePositionGridObject(BuildingType buildingType) {
+    [CanBeNull] public static Building GetNearestToMousePositionBuilding(BuildingType buildingType, bool forceBuild = false) {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
         mousePosition.z = Camera.main.transform.position.y - gridPosition.y;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         
         return buildingsHashSet
             .Where(x => x.GetBuildingType() == buildingType)
+            .Where(x => !x.IsBuilt() || forceBuild)
             .Where(x => Vector3.Distance(x.transform.position, worldPosition) <= outerRadius)
             .OrderBy(x => Vector3.Distance(x.transform.position, worldPosition))
             .FirstOrDefault();
