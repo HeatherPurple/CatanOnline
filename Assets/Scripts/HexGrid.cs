@@ -86,7 +86,7 @@ public class HexGrid : MonoBehaviour
         
         for (int i = 0; i < mapSize; i++) {
             if (i == 0) {
-                SpawnBuilding<Cell>(circleStartPosition);
+                SpawnPlaceFor<Cell>(circleStartPosition);
             } else {
                 int hexesInCurrentCircle = HEX_CORNERS_AMOUNT * i;
                 int hexesOnCurrentSideMax = i + 1;
@@ -98,7 +98,7 @@ public class HexGrid : MonoBehaviour
                 
                 for (int j = 0; j < hexesInCurrentCircle; j++) {
                     Vector3 hexPosition = circleStartPosition + circleGenerationOffset;
-                    SpawnBuilding<Cell>(hexPosition);
+                    SpawnPlaceFor<Cell>(hexPosition);
                     
                     hexesOnCurrentSide++;
                     if (hexesOnCurrentSide >= hexesOnCurrentSideMax) {
@@ -112,7 +112,7 @@ public class HexGrid : MonoBehaviour
         }
     }
     
-    private void SpawnBuilding<T>(Vector3 position) where T: Building {
+    private void SpawnPlaceFor<T>(Vector3 position) where T: Building {
         if (!CanPlaceBuildingHere(position)) return;
         
         GameObject spawnedBuildingGameObject = new GameObject {
@@ -123,16 +123,20 @@ public class HexGrid : MonoBehaviour
         };
         spawnedBuildingGameObject.transform.localScale *= outerRadius;
         Building building = spawnedBuildingGameObject.AddComponent<T>();
-        building.SetDefaultBuildingSO(defaultBuildingDataList
-            .FirstOrDefault(x => x.buildingType == building.GetBuildingType())
-            ?.buildingSO);
         buildingsHashSet.Add(building);
+        
+        BuildingSO defaultBuildingSO = defaultBuildingDataList
+            .FirstOrDefault(x => x.buildingType == building.GetBuildingType())
+            ?.buildingSO;
+        if (defaultBuildingSO is not null) {
+            building.SetDefaultBuildingSO(defaultBuildingSO);
+        }
         
         if (typeof(T) != typeof(Cell)) return;
         
         for (int i = 0; i < HEX_CORNERS_AMOUNT; i++) {
-            SpawnBuilding<Crossing>(position + crossingsPositionArray[i]);
-            SpawnBuilding<Road>(position + roadsPositionArray[i]);
+            SpawnPlaceFor<Crossing>(position + crossingsPositionArray[i]);
+            SpawnPlaceFor<Road>(position + roadsPositionArray[i]);
         }
     }
 
