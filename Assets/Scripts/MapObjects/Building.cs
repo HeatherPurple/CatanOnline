@@ -17,12 +17,15 @@ public abstract class Building : MonoBehaviour {
     
     [CanBeNull] private BuildingSO buildingSO;
     [CanBeNull] private GameObject buildingVisual;
+    [CanBeNull] private GameObject newVisual;
     private bool isSelected = false;
     private bool isBuilt = false;
 
     protected virtual void Awake() {
         if (buildingSO is not null) {
             buildingVisual = Instantiate(buildingSO.buildingVisual, transform);
+        } else {
+            
         }
     }
 
@@ -44,13 +47,23 @@ public abstract class Building : MonoBehaviour {
         UpdateBuildingVisual();
     }
     
-    public virtual void SelectBuilding() {
-        isSelected = true;
-        OnSelectionPerformed?.Invoke();
+    public virtual void SelectBuilding(GameObject prefabToShow = default) {
+        if (prefabToShow is null) {
+            isSelected = true;
+            OnSelectionPerformed?.Invoke();
+        } else {
+            newVisual = Instantiate(prefabToShow, transform);
+            buildingVisual?.SetActive(false);
+        }
     }
-    public virtual void UnselectBuilding() { 
-        isSelected = false;
-        OnSelectionPerformed?.Invoke();
+    public virtual void UnselectBuilding() {
+        if (newVisual is null) {
+            isSelected = false;
+            OnSelectionPerformed?.Invoke();
+        } else {
+            Destroy(newVisual);
+            buildingVisual?.SetActive(true);
+        }
     }
     
     public bool IsSelected() => isSelected;

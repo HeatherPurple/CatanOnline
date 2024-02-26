@@ -1,23 +1,25 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class MapBuilder : MonoBehaviour {
     
-    [SerializeField] private List<CellSO> possibleCellsToBuild;
+    [SerializeField] private List<CellSOCount> possibleCellsList;
     
-    private static List<CellSO> cellsToBuild;
+    [Serializable]
+    private struct CellSOCount {
+        public CellSO cellSO;
+        public int count;
+    }
+
+    private static Action OnBuildingPlaced;
     private static readonly Queue<BuildingSO> queueToBuild = new Queue<BuildingSO>();
     [CanBeNull] private static BuildingSO newBuildingSO;
     [CanBeNull] private static Building currentSelectedBuilding;
     
     private void Awake() {
-        cellsToBuild = possibleCellsToBuild;
+        OnBuildingPlaced += OnBuildingPlacedPerformed;
     }
 
     private void Start() {
@@ -30,18 +32,24 @@ public class MapBuilder : MonoBehaviour {
         SelectBuilding();
     }
     
-    private static void SetupBuildingGameField(int hexesNumber) {
+    private void SetupBuildingGameField(int hexesNumber) {
         SetupBuildingQueue(hexesNumber);
-        
-        newBuildingSO = queueToBuild.Dequeue();
+        TryEndBuildingGameField();
     }
 
-    private static void SetupBuildingQueue(int hexesNumber) {
-        for (int i = 0; i < hexesNumber; i++) {
-            queueToBuild.Enqueue(cellsToBuild[Random.Range(0, cellsToBuild.Count)]);
+    private void SetupBuildingQueue(int hexesNumber) {
+        while (hexesNumber > 0) {
+            foreach (var item in possibleCellsList) {
+                for (int i = 0; i < item.count; i++) {
+                    if (hexesNumber == 0) {
+                        TryPeekNextBuilding();
+                        return;
+                    }
+                    queueToBuild.Enqueue(item.cellSO);
+                    hexesNumber--;
+                }
+            }
         }
-        //add to queue ~50 hexes, 1 village, 1 road
-        
     }
     
     private static void SelectBuilding() {
@@ -56,7 +64,7 @@ public class MapBuilder : MonoBehaviour {
 
         currentSelectedBuilding?.UnselectBuilding();
         currentSelectedBuilding = building;
-        currentSelectedBuilding?.SelectBuilding();
+        currentSelectedBuilding?.SelectBuilding(newBuildingSO.buildingVisual);
     }
     
     private static void PlaceBuilding() {
@@ -64,15 +72,25 @@ public class MapBuilder : MonoBehaviour {
         if (currentSelectedBuilding is null) return;
         
         currentSelectedBuilding?.ChangeBuildingSO(newBuildingSO);
-
-        PeekNextBuilding();
+        newBuildingSO = null;
+        OnBuildingPlaced?.Invoke();
+        
+        TryPeekNextBuilding();
     }
 
-    private static void PeekNextBuilding() {
-        if (queueToBuild.TryDequeue(out newBuildingSO)) return;
-        if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField) {
+    private static void TryPeekNextBuilding() {
+        if (newBuildingSO is not null) return;
+        queueToBuild.TryDequeue(out newBuildingSO);
+    }
+    
+    private static void TryEndBuildingGameField() {
+        if (GameHandler.GetCurrentGameState() is GameHandler.GameState.BuildingGameField && queueToBuild.Count == 0) {
             GameHandler.ChangeGameState(GameHandler.GameState.DiceRolling);
         }
+    }
+    
+    private static void OnBuildingPlacedPerformed() {
+        TryEndBuildingGameField();
     }
     
     private static void OnPointerClickPerformed(object sender, EventArgs e) {
@@ -81,6 +99,12 @@ public class MapBuilder : MonoBehaviour {
     
     private void OnDestroy() {
         InputManager.Instance.OnPointerClickPerformed -= OnPointerClickPerformed;
+        OnBuildingPlaced -= OnBuildingPlacedPerformed;
+    }
+
+    public static void AddBuildingToBuildingQueue(BuildingSO buildingSO) {
+        queueToBuild.Enqueue(buildingSO);
+        TryPeekNextBuilding();
     }
     
 }
